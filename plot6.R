@@ -9,7 +9,7 @@ if(!exists("SCC")){
 }
 
 ## Question 6: Compare emissions from motor vehicle sources in Baltimore City 
-## with emissions from motor vehicle sources in Los Angeles County, California ( == “”). 
+## with emissions from motor vehicle sources in Los Angeles County, California ( == “06037"). 
 ## Which city has seen greater changes over time in motor vehicle emissions?
 
 library(ggplot2)
