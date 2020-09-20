@@ -15,15 +15,23 @@ library(dplyr)
 
 ## Constructing and saving the plot in png format.
 
-coal_SCC <- SCC[grep("[Cc][Oo][Aa][Ll]", SCC$EI.Sector), "SCC"]
-coal_NEI <- NEI %>% filter(SCC %in% coal_SCC)
-coal_summary <- NEI %>% group_by(year) %>% summarise(Emissions = sum(Emissions))
+
+combustion.coal <- grepl("Fuel Comb.*Coal", SCC$EI.Sector)
+combustion.coal.sources <- SCC[combustion.coal,]
+
+# Find emissions from coal combustion-related sources
+emissions.coal.combustion <- NEI[(NEI$SCC %in% combustion.coal.sources$SCC), ]
+
+emissions.coal.related <- summarise(group_by(emissions.coal.combustion, year), Emissions=sum(Emissions))
 
 png("plot4.png")
+ggplot(emissions.coal.related, aes(x=factor(year), y=Emissions/1000,fill=year, label = round(Emissions/1000,2))) +
+    geom_bar(stat="identity") +
+    #geom_bar(position = 'dodge')+
+    # facet_grid(. ~ year) +
+    xlab("year") +
+    ylab(expression("total PM"[2.5]*" emissions in kilotons")) +
+    ggtitle("Emissions from coal combustion-related sources in kilotons")+
+    geom_label(aes(fill = year),colour = "white", fontface = "bold")
 
-g <- ggplot(coal_summary, aes(x = year, y = round(Emissions/1000, 2), label=round(Emissions/1000, 2), fill=year))
-c_plot <- g+geom_bar(stat = "identity")+xlab("Year")+ylab(expression('PM'[2.5]*' Emissions in Kilotons'))+
-    geom_label(aes(fill=year), color = "white", fontface ="bold")+ggtitle("Coal Combustion Emissions from 1999 to 2008")
-print(c_plot)
 dev.off()
-
